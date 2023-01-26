@@ -37,11 +37,12 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Plan
+      - name: Terraform Plan 
         id: plan
         if: github.event_name == 'pull_request'
-        run: terraform plan -no-color -input=false
-        continue-on-error: true
+        run: terraform plan -no-color -input=false ; exit 1 
+        continue-on-error: true 
+        
 
       # - name: Update Pull Request
       #   uses: actions/github-script@v6
