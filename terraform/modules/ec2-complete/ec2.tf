@@ -1,4 +1,4 @@
-resource "aws_instance" "windows_stage_ec2" {     
+resource "aws_instance" "windows_stage_ec2" {
   ami                    = data.aws_ami.windows.id
   instance_type          = var.instance-type
   subnet_id              = aws_subnet.my_subnet.id
@@ -15,7 +15,7 @@ locals {
   comman_tags = {
     Owner   = " Dev Team"
     service = "backend"
-    Name = "windows-ec2"
+    Name    = "windows-ec2"
   }
 }
 

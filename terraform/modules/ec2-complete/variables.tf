@@ -1,6 +1,6 @@
 variable "availability_zone" {
   #type = list(any)
-   default = "eu-central-1"
+  default = "eu-central-1"
 }
 
 variable "sub_availability_zone" {
@@ -34,6 +34,6 @@ variable "sg_ports_egress" {
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "eu-central-1"
 }

@@ -1,9 +1,9 @@
 
 terraform {
   backend "s3" {
-    bucket = "terraform-statefile-githubaction-workflow-v1"
-    key    = "ec2-tfstate/terraform.tfstate"
-    region = "eu-central-1"
+    bucket         = "terraform-statefile-githubaction-workflow-v1"
+    key            = "ec2-tfstate/terraform.tfstate"
+    region         = "eu-central-1"
     dynamodb_table = "terraform-state-locking-s3-tfstate"
   }
 }
