@@ -74,6 +74,27 @@ jobs:
         #   repo: context.repo.repo,
         #    body: output
         #   })
+      - name: Update Pull Request
+        if: ${{ failure() }}
+        uses: actions/github-script@v6
+        with:
+         token: ${{ secrets.GIT_TOKEN }}
+         title: Action workflow failed for [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
+         body: |
+            ### Context
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [Codebase](https://github.com/${{ github.repository }}/tree/${{ github.sha }})
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            #### Terraform Initialization ⚙️`${{ steps.init.outcome }}`
+            #### Terraform Plan 📖`${{ steps.plans.outcome }}`
+            #<details><summary>Show Plan</summary>
+            `${{steps.plans.outputs.stderr}}`
+            `${{steps.plans.outputs.stdout}}`
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: `${{ github.event_name }}`*`
+         assignees: ${{ github.actor }}
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
