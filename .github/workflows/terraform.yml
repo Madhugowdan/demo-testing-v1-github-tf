@@ -76,7 +76,7 @@ jobs:
         #    body: output
         #   })
       - name: Update Pull Request
-        if: ${{ failure() }}
+        #if: ${{ failure() }}
         uses: actions/github-script@v6
         with:
          token: ${{ secrets.GIT_TOKEN }}
