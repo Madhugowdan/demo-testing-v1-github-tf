@@ -15,6 +15,7 @@ provider "aws" {
   region = "eu-central-1"
 }
 
+#tf-state details
 terraform {
   backend "s3" {
     bucket         = "terraform-statefile-githubaction-workflow-v1"
