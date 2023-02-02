@@ -1,3 +1,4 @@
+name: 'terraform-aws'
 on:
   workflow_dispatch:
   pull_request:
@@ -7,8 +8,8 @@ on:
     branches:
       - '*'
 jobs:
-  terraform:
-    name: 'Terraform create s3 bucket'
+  terraform_plan:
+    name: 'Terraform plan'
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -17,6 +18,7 @@ jobs:
       run:
         shell: bash
         working-directory: s3_create
+        
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -49,6 +51,31 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+        
+  terraform_apply:
+    name: 'terraform apply'
+    needs: [terraform_plan]
+    runs-on: ubuntu-latest
+    
+    defaults:
+     run:
+        shell: bash
+        working-directory: s3_create
+           
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+     
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.5
+          terraform_wrapper: false
+     
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
