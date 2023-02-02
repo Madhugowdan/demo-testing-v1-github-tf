@@ -1,84 +1,36 @@
-resource "aws_instance" "windows_stage_ec2" {
-  ami                    = data.aws_ami.windows.id
-  instance_type          = var.instance-type
-  subnet_id              = aws_subnet.my_subnet.id
-  vpc_security_group_ids = [aws_security_group.allow_tls.id]
-
-  tags = local.comman_tags
-
-  credit_specification {
-    cpu_credits = "unlimited"
+data "aws_vpc" "existing" {
+  filter {
+    name   = "tag:Name"
+    values = ["${var.vpc_name}"]
   }
 }
-
-locals {
-  comman_tags = {
-    Owner   = " Dev Team"
-    service = "backend"
-    Name    = "windows-ec2"
+data "aws_subnet" "existing" {
+  filter {
+    name   = "tag:Name"
+    values = var.subnet_name_1
   }
+
 }
 
-resource "aws_vpc" "my_vpc" {
-  cidr_block       = var.network_cidr
-  instance_tenancy = "default"
-  tags = {
-    Name = "stage"
-  }
-}
-
-resource "aws_subnet" "my_subnet" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = var.subnet_cidr
-  availability_zone = var.sub_availability_zone
-
-  tags = {
-    Name = "stage"
-  }
-}
-
-resource "aws_network_interface" "foo" {
-  subnet_id = aws_subnet.my_subnet.id
-  # private_ips = ["172.16.10.100"]
-
-  tags = {
-    Name = "primary_network_interface"
-  }
-}
-
-resource "aws_ebs_volume" "ebs_volume_for_windows_ec2" {
-  availability_zone = var.sub_availability_zone
-  size              = 80
-  tags              = local.comman_tags
-}
-
-resource "aws_volume_attachment" "ebs_att" {
-  device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.ebs_volume_for_windows_ec2.id
-  instance_id = aws_instance.windows_stage_ec2.id
-}
 
 data "aws_ami" "windows" {
   most_recent = true
-  #owners = ["amazon"]
   filter {
     name   = "name"
     values = ["Windows_Server-2019-English-Full-Base-*"]
-
   }
-
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
-
   }
   owners = ["801119661308"] # Canonical
 }
 
+
 resource "aws_security_group" "allow_tls" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.my_vpc.id
+  vpc_id      = data.aws_vpc.existing.id
 
   dynamic "ingress" {
     for_each = var.sg_ports_ingress
@@ -87,7 +39,7 @@ resource "aws_security_group" "allow_tls" {
       from_port   = port.value
       to_port     = port.value
       protocol    = "tcp"
-      cidr_blocks = [aws_vpc.my_vpc.cidr_block]
+      cidr_blocks = [data.aws_vpc.existing.cidr_block]
     }
   }
 
@@ -98,11 +50,45 @@ resource "aws_security_group" "allow_tls" {
       from_port   = port.value
       to_port     = port.value
       protocol    = "tcp"
-      cidr_blocks = [aws_vpc.my_vpc.cidr_block]
+      cidr_blocks = [data.aws_vpc.existing.cidr_block]
     }
   }
-
   tags = {
     Name = "allow_tls"
   }
+}
+
+
+
+resource "aws_instance" "windows_ec2" {
+  count                  = var.instance_count
+  ami                    = data.aws_ami.windows.id
+  instance_type          = var.instance_type
+  subnet_id              = data.aws_subnet.existing.id
+  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  root_block_device {
+    volume_size = var.root_volum
+  }
+  tags = {
+    Name = "${var.instance_name_prefix}-${count.index}"
+  }
+  credit_specification {
+    cpu_credits = "unlimited"
+  }
+}
+
+
+resource "aws_ebs_volume" "ebs_volume_for_windows_ec2" {
+  count             = var.instance_count
+  availability_zone = data.aws_subnet.existing.availability_zone
+  size              = var.ebs_size
+  depends_on        = [aws_instance.windows_ec2]
+
+}
+resource "aws_volume_attachment" "ebs_att" {
+  count       = var.instance_count
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.ebs_volume_for_windows_ec2[count.index].id
+  instance_id = aws_instance.windows_ec2[count.index].id
+
 }

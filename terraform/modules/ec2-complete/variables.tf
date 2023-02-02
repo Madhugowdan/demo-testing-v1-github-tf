@@ -1,25 +1,56 @@
-variable "availability_zone" {
-  #type = list(any)
-  default = "eu-central-1"
-}
 
-variable "sub_availability_zone" {
+variable "region" {
   type    = string
-  default = "eu-central-1a"
+  default = "eu-west-1"
 }
 
-variable "network_cidr" {
-  description = "IP addressing for the network"
-  default     = "10.14.184.192/27"
+variable "bucket_name" {
+  type    = string
+  default = "app-webservice-github-workflow-terraform-tfstate-v1"
 }
 
-variable "subnet_cidr" {
-  default = "10.14.184.192/28"
+variable "key_name" {
+  type    = string
+  default = "ec2-tfstate/terraform.tfstate"
 }
 
-variable "instance-type" {
-  default = "t3.large"
 
+variable "db_table_name" {
+  type    = string
+  default = "terraform-state-locking-s3-tfstate"
+}
+variable "vpc_name" {
+  type    = string
+  default = "Int-app-WebservicePolicy-Private"
+}
+
+variable "subnet_name_1" {
+  type    = list(string)
+  default = ["intranet-0"]
+}
+variable "subnet_name_2" {
+  type    = list(string)
+  default = ["intranet-1"]
+}
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "instance_count" {
+  type    = number
+  default = 2
+}
+
+
+variable "instance_name_prefix" {
+  type    = string
+  default = "windows_ec2"
+}
+
+variable "ebs_size" {
+  type    = number
+  default = 100
 }
 
 variable "sg_ports_ingress" {
@@ -33,7 +64,7 @@ variable "sg_ports_egress" {
   default = [443, 3386]
 }
 
-variable "region" {
-  type    = string
-  default = "eu-central-1"
+variable "root_volum" {
+  type    = number
+  default = 40
 }
