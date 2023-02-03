@@ -1,12 +1,12 @@
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - '*'
-  push:
-    branches:
-      - '*'
+  # pull_request:
+  #   branches:
+  #     - '*'
+  # push:
+  #   branches:
+  #     - '*'
 jobs:
   terraform_plan:
     name: 'Terraform plan'
