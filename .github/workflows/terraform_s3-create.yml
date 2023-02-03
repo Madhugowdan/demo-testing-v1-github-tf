@@ -1,4 +1,4 @@
-name: 'terraform-aws'
+
 on:
   workflow_dispatch:
   pull_request:
