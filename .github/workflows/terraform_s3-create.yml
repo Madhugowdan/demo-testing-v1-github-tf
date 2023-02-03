@@ -1,3 +1,4 @@
+name: 'terraform-aws'
 on:
   workflow_dispatch:
   pull_request:
@@ -77,7 +78,5 @@ jobs:
 
 
       - name: Terraform Apply
-        #if: github.ref == 'refs/heads/main' && github.event_name == 'push'    #runs 
-        #if: github.event_name == 'push'
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
