@@ -1,4 +1,4 @@
-name: "terraform s3 destroy"
+
 on:
   workflow_dispatch:
   # pull_request:
@@ -8,7 +8,7 @@ on:
   #   branches:
   #     - '*'
 jobs:
-  terraform_plan:
+  terraform_validate:
     name: 'Terraform plan'
     runs-on: ubuntu-latest
     env:
@@ -42,20 +42,20 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Plan 
-        id: plan
-        #if: github.event_name == 'push'
-        run: terraform plan -no-color -input=false
-        continue-on-error: true 
-        #|| github.event_name == 'push'
+      # - name: Terraform Plan 
+      #   id: plan
+      #   #if: github.event_name == 'push'
+      #   run: terraform plan -no-color -input=false
+      #   continue-on-error: true 
+      #   #|| github.event_name == 'push'
 
-      - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
+      # - name: Terraform Plan Status
+      #   if: steps.plan.outcome == 'failure'
+      #   run: exit 1
         
   terraform_apply:
     name: 'terraform apply'
-    needs: [terraform_plan]
+    needs: [terraform_validate]
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
