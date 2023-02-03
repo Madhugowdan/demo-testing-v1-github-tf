@@ -1,0 +1,86 @@
+name: "terraform s3 destroy"
+on:
+  workflow_dispatch:
+  # pull_request:
+  #   branches:
+  #     - '*'
+  # push:
+  #   branches:
+  #     - '*'
+jobs:
+  terraform_plan:
+    name: 'Terraform plan'
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: s3_create
+        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.5
+          terraform_wrapper: false
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan 
+        id: plan
+        #if: github.event_name == 'push'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true 
+        #|| github.event_name == 'push'
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+        
+  terraform_apply:
+    name: 'terraform apply'
+    needs: [terraform_plan]
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+    defaults:
+     run:
+        shell: bash
+        working-directory: s3_create
+           
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+     
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.5
+          terraform_wrapper: false
+     
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+
+      - name: Terraform Destroy
+        #if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform destroy -auto-approve -input=false
