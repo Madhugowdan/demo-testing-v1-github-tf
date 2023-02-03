@@ -15,5 +15,4 @@ provider "aws" {
 module "tf-state" {
   source      = "./modules/s3-bucket"
   bucket_name = "app-webservice-github-workflow-terraform-tfstate-v1"
-  #region      = "eu-west-1"
 }
