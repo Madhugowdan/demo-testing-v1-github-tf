@@ -1,4 +1,4 @@
-name: "terraform create"
+name: "Terraform create"
 on:
   workflow_dispatch:
   # pull_request:
