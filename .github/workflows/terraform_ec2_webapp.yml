@@ -1,12 +1,14 @@
 
-name: "Terraform deploy ec2"
+name: "Terraform deploy ec2 instance with in vpc"
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-
+#enable it for demo
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+##### comment dispatch
+  workflow_dispatch:
 jobs:
   terraform:
     name: 'Terraform'

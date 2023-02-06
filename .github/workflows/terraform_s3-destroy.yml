@@ -1,4 +1,4 @@
-name: "Terraform destroy"
+name: "Terraform destroy tf-state s3 bucket"
 
 on:
   workflow_dispatch:
