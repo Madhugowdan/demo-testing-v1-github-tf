@@ -1,3 +1,4 @@
+
 name: "Terraform create"
 on:
   workflow_dispatch:
@@ -10,16 +11,18 @@ on:
 jobs:
   terraform_plan:
     name: 'Terraform plan'
+
     runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      
     defaults:
       run:
         shell: bash
         working-directory: s3_create
-        
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -44,7 +47,9 @@ jobs:
 
       - name: Terraform Plan 
         id: plan
+
         #if: github.event_name == 'push'
+
         run: terraform plan -no-color -input=false
         continue-on-error: true 
         #|| github.event_name == 'push'
@@ -52,6 +57,7 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
         
   terraform_apply:
     name: 'terraform apply'
@@ -83,4 +89,5 @@ jobs:
 
       - name: Terraform Apply
         #if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
         run: terraform apply -auto-approve -input=false
