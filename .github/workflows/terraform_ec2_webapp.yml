@@ -1,5 +1,5 @@
 
-name: "Terraform deploy ec2 instance with in vpc"
+name: "Deploy ec2 instance"
 
 on:
 #enable it for demo

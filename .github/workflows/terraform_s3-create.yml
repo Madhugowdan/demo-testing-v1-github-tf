@@ -1,5 +1,5 @@
 
-name: "Terraform create new tf-state s3 bucket"
+name: "Create s3 bucket"
 on:
   workflow_dispatch:
   # pull_request:
