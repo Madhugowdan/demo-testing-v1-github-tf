@@ -85,13 +85,15 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
-      - name: Terraform Destroy
-        #if: github.ref == 'refs/heads/main' && github.event_name == 'push' # on events
-        run: terraform destroy -auto-approve #-input=false
-      - name: Sleep for 30 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '30s'
+
+      # - name: Terraform Destroy
+      #   #if: github.ref == 'refs/heads/main' && github.event_name == 'push' # on events
+      #   run: terraform destroy -auto-approve #-input=false
+
+      # - name: Sleep for 30 seconds
+      #   uses: jakejarvis/wait-action@master
+      #   with:
+      #     time: '30s'
 
 
       - name: Terraform Apply
