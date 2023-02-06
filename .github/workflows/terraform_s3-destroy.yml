@@ -79,7 +79,7 @@ jobs:
      
       - name: Terraform Init
         id: init
-        run: terraform initls 
+        run: terraform init
 
       - name: Terraform Destroy
         #if: github.ref == 'refs/heads/main' && github.event_name == 'push' # on events
