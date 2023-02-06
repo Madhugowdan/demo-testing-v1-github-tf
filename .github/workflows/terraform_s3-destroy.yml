@@ -54,7 +54,7 @@ jobs:
       #   run: exit 1
         
   terraform_apply:
-    name: 'terraform apply'
+    name: 'terraform destroy'
     needs: [terraform_validate]
     runs-on: ubuntu-latest
     env:
@@ -79,6 +79,7 @@ jobs:
       - name: Terraform Init
         id: init
         run: terraform init
+
 
 
       - name: Terraform Destroy
